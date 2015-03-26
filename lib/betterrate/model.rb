@@ -64,40 +64,36 @@ module Betterrate
   end
 
   def overall_avg(user)
-    # avg = OverallAverage.where(rateable_id: self.id)
-    ## FIXME: Fix the bug when the movie has no ratings
-    # unless avg.empty?
-    #   return avg.take.avg unless avg.take.avg == 0
-    # else # calculate average, and save it
-    #   dimensions_count = overall_score = 0
-    #   user.ratings_given.select('DISTINCT dimension').each do |d|
-    #     dimensions_count = dimensions_count + 1
-    #     unless average(d.dimension).nil?
-    #       overall_score = overall_score + average(d.dimension).avg
-    #     end
-    #   end
-    #   overall_avg = (overall_score / dimensions_count).to_f.round(1)
-    #   AverageCache.create! do |a|
-    #     a.rater_id = user.id
-    #     a.rateable_id = self.id
-    #     a.avg = overall_avg
-    #   end
-    #   overall_avg
-    # end
+    avg = AverageCache.where(rateable: self).where(rater_id: user.id).select('avg').limit(1)
+    if avg.empty?
+      unique_dimensions = self.dimensions.count
+      total_rates = Rate.where(rateable: self).where(rater_id: user.id).sum('stars')
+      avg = total_rates.to_f/(unique_dimensions).round(1)
+      avg = avg.round(1)
+      ac = AverageCache.new
+      ac.rater_id =user.id
+      ac.rateable = self
+      ac.avg = avg
+      ac.save
+    end
+    avg
   end
 
   # calculate the movie overall average rating for all users
-  def calculate_overall_average include_unrated_dimensions = true
-    unless include_unrated_dimensions
-      rating = Rate.where(rateable: self).pluck('stars')
-      avg = rating.reduce(:+).to_f / rating.size
-    else
+  def calculate_overall_average
+    avg = OverallAverage.where(rateable: self).select('avg').limit(1)
+    if avg.empty?
       unique_dimensions = self.dimensions.count
       unique_rates = Rate.distinct.where(rateable: self).count('rater_id')
       total_rates = Rate.where(rateable: self).sum('stars')
       avg = total_rates.to_f/(unique_dimensions*unique_rates).round(1)
+      avg.round(1)
+      oa = OverallAverage.new
+      oa.rateable = self
+      oa.avg=avg
+      oa.save
     end
-    avg.round(1)
+    avg
   end
 
   def average(dimension=nil)
