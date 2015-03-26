@@ -93,8 +93,8 @@ module Betterrate
       avg = rating.reduce(:+).to_f / rating.size
     else
       unique_dimensions = self.dimensions.count
-      unique_rates = Rate.distinct.where(rateable: self.rateable).count('rater_id')
-      total_rates = Rate.where(rateable: self.rateable).sum('stars')
+      unique_rates = Rate.distinct.where(rateable: self).count('rater_id')
+      total_rates = Rate.where(rateable: self).sum('stars')
       avg = total_rates.to_f/(unique_dimensions*unique_rates).round(1)
     end
     avg.round(1)
@@ -127,7 +127,13 @@ module Betterrate
     end
 
     def betterrate_rateable(*dimensions)
-      self.dimensions = dimensions
+      define_method(:dimensions) do
+        dimensions
+      end
+      self.define_singleton_method(:dimensions) do
+        dimensions
+      end
+
       has_many :rates_without_dimension, -> { where dimension: nil }, :as => :rateable, :class_name => "Rate", :dependent => :destroy
       has_many :raters_without_dimension, :through => :rates_without_dimension, :source => :rater
 
