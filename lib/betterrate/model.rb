@@ -92,7 +92,7 @@ module Betterrate
       rating = Rate.where(rateable: self).pluck('stars')
       avg = rating.reduce(:+).to_f / rating.size
     else
-      unique_dimensions = self.unique_dimensions.count
+      unique_dimensions = self.dimensions.count
       unique_rates = Rate.distinct.where(rateable: self.rateable).count('rater_id')
       total_rates = Rate.where(rateable: self.rateable).sum('stars')
       avg = total_rates.to_f/(unique_dimensions*unique_rates).round(1)
