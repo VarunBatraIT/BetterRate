@@ -63,9 +63,12 @@ module Betterrate
     end
   end
 
-  def overall_avg(user)
-    avg = AverageCache.where(rateable: self).where(rater_id: user.id).select('avg').limit(1)
-    if avg.empty?
+  def overall_avg(user = nil)
+    if user.nil?
+      return calculate_overall_average
+    end
+    avg = AverageCache.where(rateable: self).where(rater_id: user.id).pluck('avg').first
+    if avg.nil?
       unique_dimensions = self.dimensions.count
       total_rates = Rate.where(rateable: self).where(rater_id: user.id).sum('stars')
       avg = total_rates.to_f/(unique_dimensions).round(1)
@@ -81,8 +84,8 @@ module Betterrate
 
   # calculate the movie overall average rating for all users
   def calculate_overall_average
-    avg = OverallAverage.where(rateable: self).select('avg').limit(1)
-    if avg.empty?
+    avg = OverallAverage.where(rateable: self).pluck('avg').first
+    if avg.nil?
       unique_dimensions = self.dimensions.count
       unique_rates = Rate.distinct.where(rateable: self).count('rater_id')
       total_rates = Rate.where(rateable: self).sum('stars')
@@ -129,6 +132,8 @@ module Betterrate
       self.define_singleton_method(:dimensions) do
         dimensions
       end
+
+      scope :betterrate_order, ->(order_by = 'DESC') { joins(' Left Join '+OverallAverage.table_name+' as oa ON oa.rateable_id  = '+eval(self.name).table_name+'.id AND oa.rateable_type = "'+self.name+'"').order('oa.avg ' + (order_by.downcase == "asc" ? "ASC" : "DESC")) }
 
       has_many :rates_without_dimension, -> { where dimension: nil }, :as => :rateable, :class_name => "Rate", :dependent => :destroy
       has_many :raters_without_dimension, :through => :rates_without_dimension, :source => :rater
