@@ -53,7 +53,7 @@ module Betterrate
     current_rate = rates(dimension).where(rater_id: user.id).take
     current_rate.stars = stars
     current_rate.save!(validate: false)
-
+    update_overall_avg(user)
     if rates(dimension).count > 1
       update_rate_average(stars, dimension)
     else # Set the avarage to the exact number of stars
@@ -63,21 +63,38 @@ module Betterrate
     end
   end
 
+  def update_overall_avg(user = nil)
+    unique_dimensions = self.dimensions.count
+    if user.nil?
+      total_rates = Rate.where(rateable: self).sum('stars')
+      unique_rates = Rate.distinct.where(rateable: self).count('rater_id')
+      avg = total_rates.to_f/(unique_dimensions*unique_rates).round(1)
+      avg = avg.round(1)
+      oa = OverallAverage.where(rateable: self).first || OverallAverage.new
+      oa.rateable = self
+      oa.avg=avg
+      oa.save
+    else
+      total_rates = Rate.where(rateable: self).where(rater_id: user.id).sum('stars')
+      avg = total_rates.to_f/(unique_dimensions).round(1)
+      avg = avg.round(1)
+      ac = AverageCache.where(rateable: self).where(rater_id: user.id).first || AverageCache.new
+      ac.rater_id =user.id
+      ac.rateable = self
+      ac.avg = avg
+      ac.save
+      update_overall_avg #update new rating
+    end
+    avg
+  end
+
   def overall_avg(user = nil)
     if user.nil?
       return calculate_overall_average
     end
     avg = AverageCache.where(rateable: self).where(rater_id: user.id).pluck('avg').first
     if avg.nil?
-      unique_dimensions = self.dimensions.count
-      total_rates = Rate.where(rateable: self).where(rater_id: user.id).sum('stars')
-      avg = total_rates.to_f/(unique_dimensions).round(1)
-      avg = avg.round(1)
-      ac = AverageCache.new
-      ac.rater_id =user.id
-      ac.rateable = self
-      ac.avg = avg
-      ac.save
+      avg = update_overall_avg(user)
     end
     avg
   end
@@ -86,15 +103,7 @@ module Betterrate
   def calculate_overall_average
     avg = OverallAverage.where(rateable: self).pluck('avg').first
     if avg.nil?
-      unique_dimensions = self.dimensions.count
-      unique_rates = Rate.distinct.where(rateable: self).count('rater_id')
-      total_rates = Rate.where(rateable: self).sum('stars')
-      avg = total_rates.to_f/(unique_dimensions*unique_rates).round(1)
-      avg.round(1)
-      oa = OverallAverage.new
-      oa.rateable = self
-      oa.avg=avg
-      oa.save
+      avg = update_overall_avg
     end
     avg
   end
