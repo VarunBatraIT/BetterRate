@@ -132,7 +132,7 @@ module Betterrate
       self.define_singleton_method(:dimensions) do
         dimensions
       end
-
+      #helps ordering
       scope :betterrate_order, ->(order_by = 'DESC') { joins(' Left Join '+OverallAverage.table_name+' as oa ON oa.rateable_id  = '+eval(self.name).table_name+'.id AND oa.rateable_type = "'+self.name+'"').order('oa.avg ' + (order_by.downcase == "asc" ? "ASC" : "DESC")) }
 
       has_many :rates_without_dimension, -> { where dimension: nil }, :as => :rateable, :class_name => "Rate", :dependent => :destroy
@@ -140,6 +140,15 @@ module Betterrate
 
       has_one :rate_average_without_dimension, -> { where dimension: nil }, :as => :cacheable,
               :class_name => "RatingCache", :dependent => :destroy
+
+      has_many :rate_average, -> { where.not dimension: nil }, :as => :cacheable,
+               :class_name => "RatingCache", :dependent => :destroy
+
+      has_one :rate_overall_average, :as => :rateable,
+              :class_name => "OverallAverage", :dependent => :destroy
+
+      has_many :rater_average, :as => :rateable,
+               :class_name => "AverageCache", :dependent => :destroy
 
       dimensions.each do |dimension|
         has_many "#{dimension}_rates".to_sym, -> { where dimension: dimension.to_s },
