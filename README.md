@@ -32,7 +32,7 @@ Assuming that you have Movie model and User model
   #movie.rb
   betterrate_rateable "Action", "Story" # "Action and Story are two dimensions"
 ```
-Note that dimensions can't have spaces since it creates functions dynamically, due to sorting, I won't be handle it everywhere. Please make sure you do your homework.
+Note that dimensions can't have spaces since it creates functions dynamically, due to sorting, I can't handle it everywhere. Please make sure you do your homework :).
 
 ```ruby
   #user.rb
