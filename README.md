@@ -2,7 +2,12 @@
 
 Fork of [RatyRate](https://github.com/wazery/ratyrate) Stars Rating Gem
 
-Wanted much more funcionality, didn't want to hack around so created my own. 
+It focues on view part and reduces queries. Idea is to have functionality like
+
+- order by
+- imdb of user with eager load
+- lots of eager load
+- imdb rating of rateable object itself with eager loading
 
 [![License](http://img.shields.io/license/MIT.png?color=green)](http://opensource.org/licenses/MIT)
 
@@ -48,14 +53,23 @@ Story : <%= rating_for @movie, "Story" %>
 
 #Other Helpers
 
-Shows overall rater avg
+
 ```
+Shows overall avg
 <%= imdb_style_rating_for(@movie, user)  %>
 Shows stars of rater per dimensions
 <%= rating_for_user @movie, current_user, "Story" %>
 <%= rating_for_user @movie, current_user, "Story", {:disable_after_rate => true} %>
 View Only User rating, user can't edit it
 <%= rating_for_user(@movie, current_user, "Story" , {:disable_after_rate => true, :readonly => true} %>
+```
+
+#in case you user eager load
+
+```
+imdb_style_rating_for(@movie, current_user, options = {:avg => 5}) #passes user rating if not passed, it will query
+imdb_style_rating(@movie, options = {:avg => 5}) #passes movie overall avg rating if not passed, it will query
+
 ```
 
 #Rating Sort considering Overall Avg
