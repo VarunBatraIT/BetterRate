@@ -1,7 +1,10 @@
-$.fn.raty.defaults.half = false;
-$.fn.raty.defaults.halfShow = true;
-$.fn.raty.defaults.path = "/assets";
-$.fn.raty.defaults.cancel = false;
+$(document).ready(function(){
+    //ensures loading of raty
+    $.fn.raty.defaults.half = false;
+    $.fn.raty.defaults.halfShow = true;
+    $.fn.raty.defaults.path = "/assets";
+    $.fn.raty.defaults.cancel = false;
+});
 
 function initstars() {
     $(".star").each(function () {
@@ -67,7 +70,7 @@ function initstars() {
             }
         });
     });
-};
+}
 
 $(document).ready(initstars);
 if (window.Turbolinks !== undefined) {
