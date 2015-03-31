@@ -1,11 +1,9 @@
-$(document).ready(function(){
-    //ensures loading of raty
+$(document).ready(function () {
     $.fn.raty.defaults.half = false;
     $.fn.raty.defaults.halfShow = true;
     $.fn.raty.defaults.path = "/assets";
     $.fn.raty.defaults.cancel = false;
-});
-
+})
 function initstars() {
     $(".star").each(function () {
         var $this = $(this);
@@ -70,16 +68,27 @@ function initstars() {
             }
         });
     });
-}
+};
 
-$(document).ready(initstars);
-if (window.Turbolinks !== undefined) {
-    $(document).on('page:change', initstars);
-} else {
-    $(document).ajaxStop(function (event, xhr, settings) {
-        setTimeout(function () {
-            initstars //gives enough time for page change
-        }, 10)
-    });
-    //more generic solution
-}
+$(document).ready(function () {
+    initstars();
+    if (window.Turbolinks !== undefined) {
+        $(document).on('page:change', initstars);
+    } else if (window.wiselinks !== undefined) {
+        $(document).off('page:always').on(
+                'page:always',
+                function (event, $target, status, url, data) {
+                    initstars()
+                }
+        )
+        $(document).on('page:change', initstars);
+    } else {
+        $(document).ajaxStop(function (event, xhr, settings) {
+            setTimeout(function () {
+                initstars //gives enough time for page change
+            }, 10)
+        });
+        //more generic solution
+    }
+
+});
