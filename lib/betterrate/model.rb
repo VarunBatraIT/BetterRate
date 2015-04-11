@@ -28,7 +28,7 @@ module Betterrate
     posterior = dp.merge(stars_group) { |key, a, b| a + b }
     sum = posterior.map { |i, v| v }.inject { |a, b| a + b }
     davg = posterior.map { |i, v| i * v }.inject { |a, b| a + b }.to_f / sum
-
+    davg = 0.0 if davg.nan?
     if average(dimension).nil?
       send("create_#{average_assoc_name(dimension)}!", {avg: davg, qty: 1, dimension: dimension})
     else
@@ -46,6 +46,7 @@ module Betterrate
       a = average(dimension)
       a.qty = rates(dimension).count
       a.avg = rates(dimension).average(:stars)
+      a.avg = 0.0 if a.avg.nan?
       a.save!(validate: false)
     end
   end
@@ -70,6 +71,7 @@ module Betterrate
       unique_rates = Rate.distinct.where(rateable: self).count('rater_id')
       avg = total_rates.to_f/(unique_dimensions*unique_rates).round(1)
       avg = avg.round(1)
+      avg = 0.0 if avg.nan?
       oa = OverallAverage.where(rateable: self).first || OverallAverage.new
       oa.rateable = self
       oa.avg=avg
@@ -78,6 +80,7 @@ module Betterrate
       total_rates = Rate.where(rateable: self).where(rater_id: user.id).sum('stars')
       avg = total_rates.to_f/(unique_dimensions).round(1)
       avg = avg.round(1)
+      avg = 0.0 if avg.nan?
       ac = AverageCache.where(rateable: self).where(rater_id: user.id).first || AverageCache.new
       ac.rater_id =user.id
       ac.rateable = self
