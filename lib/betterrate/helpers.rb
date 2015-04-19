@@ -92,16 +92,20 @@ module Helpers
     end
   end
   def rating_for_user(rateable_obj, rating_user, dimension = nil, options = {})
-    @object = rateable_obj
-    @user   = rating_user
-	  @rating = Rate.find_by_rater_id_and_rateable_id_and_dimension(@user.id, @object.id, dimension)
-	  stars = @rating ? @rating.stars : 0
+    object = rateable_obj
+    user   = rating_user
+	  rating = Rate.find_by_rater_id_and_rateable_id_and_dimension(user.id, object.id, dimension)
+	  stars = rating ? rating.stars : 0
 
     star         = options[:star]         || 5
     enable_half  = options[:enable_half]  || false
     half_show    = options[:half_show]    || true
     star_path    = options[:star_path]    || '/assets'
     star_on      = options[:star_on]      || image_path('/star-on.png')
+
+
+
+
     star_off     = options[:star_off]     || image_path('/star-off.png')
     star_half    = options[:star_half]    || image_path('/star-half.png')
     cancel       = options[:cancel]       || false
