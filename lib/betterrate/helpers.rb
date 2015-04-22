@@ -7,15 +7,15 @@ module Helpers
     star         = options[:star]         || 5
     enable_half  = options[:enable_half]  || false
     half_show    = options[:half_show]    || true
-    star_path    = options[:star_path]    || '/assets'
-    star_on      = options[:star_on]      || image_path('/star-on.png')
-    star_off     = options[:star_off]     || image_path('/star-off.png')
-    star_half    = options[:star_half]    || image_path('/star-half.png')
+    star_path    = options[:star_path]    || ''
+    star_on      = options[:star_on]      || image_path('star-on.png')
+    star_off     = options[:star_off]     || image_path('star-off.png')
+    star_half    = options[:star_half]    || image_path('star-half.png')
     cancel       = options[:cancel]       || false
     cancel_place = options[:cancel_place] || 'left'
     cancel_hint  = options[:cancel_hint]  || 'Cancel current rating!'
-    cancel_on    = options[:cancel_on]    || image_path('/cancel-on.png')
-    cancel_off   = options[:cancel_off]   || image_path('/cancel-off.png')
+    cancel_on    = options[:cancel_on]    || image_path('cancel-on.png')
+    cancel_off   = options[:cancel_off]   || image_path('cancel-off.png')
     noRatedMsg   = options[:noRatedMsg]   || 'I\'am readOnly and I haven\'t rated yet!'
     # round        = options[:round]        || { down: .26, full: .6, up: .76 }
     space        = options[:space]        || false
@@ -37,7 +37,7 @@ module Helpers
     end
 
     if options[:imdb_avg] && readonly
-      content_tag :div, '', :style => "background-image:url('#{image_path('/mid-star.png')}');width:61px;height:57px;margin-top:10px;" do
+      content_tag :div, '', :style => "background-image:url('#{image_path('mid-star.png')}');width:61px;height:57px;margin-top:10px;" do
           content_tag :p, avg, :style => "position:relative;font-size:.8rem;text-align:center;line-height:60px;"
       end
     else
@@ -100,19 +100,19 @@ module Helpers
     star         = options[:star]         || 5
     enable_half  = options[:enable_half]  || false
     half_show    = options[:half_show]    || true
-    star_path    = options[:star_path]    || '/assets'
-    star_on      = options[:star_on]      || image_path('/star-on.png')
+    star_path    = options[:star_path]    || ''
+    star_on      = options[:star_on]      || image_path('star-on.png')
 
 
 
 
-    star_off     = options[:star_off]     || image_path('/star-off.png')
-    star_half    = options[:star_half]    || image_path('/star-half.png')
+    star_off     = options[:star_off]     || image_path('star-off.png')
+    star_half    = options[:star_half]    || image_path('star-half.png')
     cancel       = options[:cancel]       || false
     cancel_place = options[:cancel_place] || 'left'
     cancel_hint  = options[:cancel_hint]  || 'Cancel current rating!'
-    cancel_on    = options[:cancel_on]    || image_path('/cancel-on.png')
-    cancel_off   = options[:cancel_off]   || image_path('/cancel-off.png')
+    cancel_on    = options[:cancel_on]    || image_path('cancel-on.png')
+    cancel_off   = options[:cancel_off]   || image_path('cancel-off.png')
     noRatedMsg   = options[:noRatedMsg]   || 'I\'am readOnly and I haven\'t rated yet!'
     # round        = options[:round]        || { down: .26, full: .6, up: .76 }
     space        = options[:space]        || false
