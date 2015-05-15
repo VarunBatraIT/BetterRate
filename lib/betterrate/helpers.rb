@@ -4,28 +4,28 @@ module Helpers
     cached_average = rateable_obj.average dimension
     avg = cached_average ? cached_average.avg : 0
 
-    star         = options[:star]         || 5
-    enable_half  = options[:enable_half]  || false
-    half_show    = options[:half_show]    || true
-    star_path    = options[:star_path]    || ''
-    star_on      = options[:star_on]      || image_path('star-on.png')
-    star_off     = options[:star_off]     || image_path('star-off.png')
-    star_half    = options[:star_half]    || image_path('star-half.png')
-    cancel       = options[:cancel]       || false
+    star = options[:star] || 5
+    enable_half = options[:enable_half] || false
+    half_show = options[:half_show] || true
+    star_path = options[:star_path] || ''
+    star_on = options[:star_on] || image_path('star-on.png')
+    star_off = options[:star_off] || image_path('star-off.png')
+    star_half = options[:star_half] || image_path('star-half.png')
+    cancel = options[:cancel] || false
     cancel_place = options[:cancel_place] || 'left'
-    cancel_hint  = options[:cancel_hint]  || 'Cancel current rating!'
-    cancel_on    = options[:cancel_on]    || image_path('cancel-on.png')
-    cancel_off   = options[:cancel_off]   || image_path('cancel-off.png')
-    noRatedMsg   = options[:noRatedMsg]   || 'I\'am readOnly and I haven\'t rated yet!'
+    cancel_hint = options[:cancel_hint] || 'Cancel current rating!'
+    cancel_on = options[:cancel_on] || image_path('cancel-on.png')
+    cancel_off = options[:cancel_off] || image_path('cancel-off.png')
+    noRatedMsg = options[:noRatedMsg] || 'I\'am readOnly and I haven\'t rated yet!'
     # round        = options[:round]        || { down: .26, full: .6, up: .76 }
-    space        = options[:space]        || false
-    single       = options[:single]       || false
-    target       = options[:target]       || ''
-    targetText   = options[:targetText]   || ''
-    targetType   = options[:targetType]   || 'hint'
+    space = options[:space] || false
+    single = options[:single] || false
+    target = options[:target] || ''
+    targetText = options[:targetText] || ''
+    targetType = options[:targetType] || 'hint'
     targetFormat = options[:targetFormat] || '{score}'
-    targetScore  = options[:targetScore]  || ''
-    readOnly  = options[:readonly]  || false
+    targetScore = options[:targetScore] || ''
+    readOnly = options[:readonly] || false
 
     disable_after_rate = options[:disable_after_rate] && true
     disable_after_rate = true if disable_after_rate == nil
@@ -38,7 +38,7 @@ module Helpers
 
     if options[:imdb_avg] && readonly
       content_tag :div, '', :style => "background-image:url('#{image_path('mid-star.png')}');width:61px;height:57px;margin-top:10px;" do
-          content_tag :p, avg, :style => "position:relative;font-size:.8rem;text-align:center;line-height:60px;"
+        content_tag :p, avg, :style => "position:relative;font-size:.8rem;text-align:center;line-height:60px;"
       end
     else
       content_tag :div, '', "data-dimension" => dimension, :class => "star", "data-rating" => avg,
@@ -54,7 +54,7 @@ module Helpers
                   "data-star-half" => star_half,
                   "data-cancel" => cancel,
                   "data-cancel-place" => cancel_place,
-                  "data-cancel-hint"  => cancel_hint,
+                  "data-cancel-hint" => cancel_hint,
                   "data-cancel-on" => cancel_on,
                   "data-cancel-off" => cancel_off,
                   "data-no-rated-message" => noRatedMsg,
@@ -72,57 +72,64 @@ module Helpers
   def imdb_style_rating_for(rateable_obj, user, options = {})
     #TODO: add option to change the star icon
     overall_avg = options[:avg] || rateable_obj.overall_avg(user)
-
+    options[:zero] = options[:zero] || false
+    if options[:zero] && overall_avg == 0
+      overall_avg = '-'
+    end
     content_tag :div, '', :style => "background-image:url('#{image_path('big-star.png')}');width:81px;height:81px;margin-top:10px;" do
-        content_tag :p, overall_avg, :style => "position:relative;line-height:85px;text-align:center;"
+      content_tag :p, overall_avg, :style => "position:relative;line-height:85px;text-align:center;"
     end
   end
+
 
   def imdb_style_rating(rateable_obj, options = {})
     #TODO: add option to change the star icon
     overall_avg = 0
+    options[:zero] = options[:zero] || false
     if options[:avg]
       overall_avg = options[:avg]
     elsif rateable_obj.rate_overall_average
-      overall_avg =  rateable_obj.rate_overall_average.avg
+      overall_avg = rateable_obj.rate_overall_average.avg
+    end
+    if options[:zero] && overall_avg == 0
+      overall_avg = '-'
     end
 
     content_tag :div, '', :style => "background-image:url('#{image_path('big-star.png')}');width:81px;height:81px;margin-top:10px;" do
       content_tag :p, overall_avg, :style => "position:relative;line-height:85px;text-align:center;"
     end
   end
+
   def rating_for_user(rateable_obj, rating_user, dimension = nil, options = {})
     object = rateable_obj
-    user   = rating_user
-	  rating = Rate.find_by_rater_id_and_rateable_id_and_dimension(user.id, object.id, dimension)
-	  stars = rating ? rating.stars : 0
+    user = rating_user
+    rating = Rate.find_by_rater_id_and_rateable_id_and_dimension(user.id, object.id, dimension)
+    stars = rating ? rating.stars : 0
 
-    star         = options[:star]         || 5
-    enable_half  = options[:enable_half]  || false
-    half_show    = options[:half_show]    || true
-    star_path    = options[:star_path]    || ''
-    star_on      = options[:star_on]      || image_path('star-on.png')
-
-
+    star = options[:star] || 5
+    enable_half = options[:enable_half] || false
+    half_show = options[:half_show] || true
+    star_path = options[:star_path] || ''
+    star_on = options[:star_on] || image_path('star-on.png')
 
 
-    star_off     = options[:star_off]     || image_path('star-off.png')
-    star_half    = options[:star_half]    || image_path('star-half.png')
-    cancel       = options[:cancel]       || false
+    star_off = options[:star_off] || image_path('star-off.png')
+    star_half = options[:star_half] || image_path('star-half.png')
+    cancel = options[:cancel] || false
     cancel_place = options[:cancel_place] || 'left'
-    cancel_hint  = options[:cancel_hint]  || 'Cancel current rating!'
-    cancel_on    = options[:cancel_on]    || image_path('cancel-on.png')
-    cancel_off   = options[:cancel_off]   || image_path('cancel-off.png')
-    noRatedMsg   = options[:noRatedMsg]   || 'I\'am readOnly and I haven\'t rated yet!'
+    cancel_hint = options[:cancel_hint] || 'Cancel current rating!'
+    cancel_on = options[:cancel_on] || image_path('cancel-on.png')
+    cancel_off = options[:cancel_off] || image_path('cancel-off.png')
+    noRatedMsg = options[:noRatedMsg] || 'I\'am readOnly and I haven\'t rated yet!'
     # round        = options[:round]        || { down: .26, full: .6, up: .76 }
-    space        = options[:space]        || false
-    single       = options[:single]       || false
-    target       = options[:target]       || ''
-    targetText   = options[:targetText]   || ''
-    targetType   = options[:targetType]   || 'hint'
+    space = options[:space] || false
+    single = options[:single] || false
+    target = options[:target] || ''
+    targetText = options[:targetText] || ''
+    targetType = options[:targetType] || 'hint'
     targetFormat = options[:targetFormat] || '{score}'
-    targetScore  = options[:targetScore]  || ''
-    readonly     = options[:readonly]  || false
+    targetScore = options[:targetScore] || ''
+    readonly = options[:readonly] || false
 
     disable_after_rate = options[:disable_after_rate] || false
 
@@ -144,7 +151,7 @@ module Helpers
                 "data-star-half" => star_half,
                 "data-cancel" => cancel,
                 "data-cancel-place" => cancel_place,
-                "data-cancel-hint"  => cancel_hint,
+                "data-cancel-hint" => cancel_hint,
                 "data-cancel-on" => cancel_on,
                 "data-cancel-off" => cancel_off,
                 "data-no-rated-message" => noRatedMsg,
