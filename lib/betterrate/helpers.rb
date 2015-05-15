@@ -72,8 +72,8 @@ module Helpers
   def imdb_style_rating_for(rateable_obj, user, options = {})
     #TODO: add option to change the star icon
     overall_avg = options[:avg] || rateable_obj.overall_avg(user)
-    options[:zero] = options[:zero] || false
-    if options[:zero] && overall_avg == 0
+    options[:not_zero] = options[:not_zero] || false
+    if options[:not_zero] && overall_avg == 0
       overall_avg = '-'
     end
     content_tag :div, '', :style => "background-image:url('#{image_path('big-star.png')}');width:81px;height:81px;margin-top:10px;" do
@@ -85,13 +85,13 @@ module Helpers
   def imdb_style_rating(rateable_obj, options = {})
     #TODO: add option to change the star icon
     overall_avg = 0
-    options[:zero] = options[:zero] || false
+    options[:not_zero] = options[:not_zero] || false
     if options[:avg]
       overall_avg = options[:avg]
     elsif rateable_obj.rate_overall_average
       overall_avg = rateable_obj.rate_overall_average.avg
     end
-    if options[:zero] && overall_avg == 0
+    if options[:not_zero] && overall_avg == 0
       overall_avg = '-'
     end
 
